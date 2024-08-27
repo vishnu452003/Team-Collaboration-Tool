@@ -5,10 +5,17 @@ const Sidebar = () => {
     <aside>
       <nav>
         <ul>
-          <li>Dashboard</li>
-          <li>Workspaces</li>
-          <li>Reports</li>
+          <li>
+            DASHBOARD
+          </li>
+          <li>
+            WORKSPACES
+          </li>
+          <li>
+             REPORTS
+          </li>
         </ul>
+        
       </nav>
     </aside>
   );
