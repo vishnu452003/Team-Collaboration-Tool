@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './Auth.css'; 
-
+import { Snackbar, Alert } from '@mui/material';
+import backgroundImage from './assets/images/auth-background.png'; 
 const Register = () => {
   const [formData, setFormData] = useState({
     username: '',
@@ -11,6 +12,9 @@ const Register = () => {
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState({});
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -18,7 +22,11 @@ const Register = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match!');
+      //alert('Passwords do not match!');
+
+      setSnackbarSeverity('error');
+      setMessage('Passwords do not match!');
+      setSnackbarOpen(true);
       return;
     }
 
@@ -28,24 +36,33 @@ const Register = () => {
       confirm_password: formData.confirmPassword
     })
     .then(response => {
-      setMessage('Registration successful!');
-      setErrors({}); // Clear previous errors
-      console.log(response.data);
+        setMessage('Registration successful!');
+        setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+      setErrors({}); 
+      //console.log(response.data);
     })
     .catch(error => {
       if (error.response && error.response.data.errors) {
-        setErrors(error.response.data.errors); // Set errors from backend response
+        setErrors(error.response.data.errors); 
       } else {
+        setSnackbarSeverity('error');
         setMessage('An unexpected error occurred.');
+        setSnackbarOpen(true);
+        
       }
       console.error(error);
     });
   };
 
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
   return (
     <div className="auth-container">
-      <div className="auth-box">
-        <h2>Create an Account</h2>
+     <img src={backgroundImage} alt="Auth Background" className="auth-image" />
+      <div className="auth-box ">
+        <h2 >Create an Account</h2>
         <form onSubmit={handleSubmit}>
           <input 
             type="text" 
@@ -87,6 +104,16 @@ const Register = () => {
           Already have an account? <a href="/login">Login</a>
         </p>
       </div>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
