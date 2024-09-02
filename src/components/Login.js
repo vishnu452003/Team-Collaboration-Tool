@@ -33,11 +33,18 @@ const Login = () => {
       password: formData.password
     })
     .then(response => {
+
+        localStorage.setItem('accessToken', response.data.access);
+        localStorage.setItem('refreshToken', response.data.refresh);
+
       setMessage('Login successful!');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
       setError('');
-      navigate('/dashboard');
+      
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 2000);
     })
     .catch(error => {
       setMessage('Invalid credentials');
@@ -50,15 +57,22 @@ const Login = () => {
     setSnackbarOpen(false);
   };
 
- 
+  
+
+  
 
   return (
     
     <div className="auth-container">
+        
+         <img src={backgroundImage} alt="Auth Background" className="auth-image" />
          
-      <img src={backgroundImage} alt="Auth Background" className="auth-image" />
+      
       <div className="auth-box">
+      
+
         <h2>Login</h2>
+        
         <form onSubmit={handleSubmit}>
         <div className="password-input-container">
           <input 
@@ -89,6 +103,7 @@ const Login = () => {
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <p>
           <Link to="/password-reset">Forgot your password?</Link>
+          
         </p>
       </div>
 

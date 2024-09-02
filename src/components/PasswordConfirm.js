@@ -27,7 +27,9 @@ const PasswordConfirm = () => {
       setMessage('Password reset successful!');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
-      navigate('/login');
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
     })
     .catch(error => {
       setMessage('Error resetting password');

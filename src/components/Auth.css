@@ -9,6 +9,8 @@
     position: relative;
     overflow: hidden;
   }
+
+  
   
   .auth-box {
     /*background-color: white;*/
@@ -81,6 +83,7 @@
     /* Slight transparency to enhance visibility of the box */
     filter: blur(1px); /* Slight blur effect to give focus to the form */
   }
+  
 
   @media (max-width: 576px) {
     .auth-box {

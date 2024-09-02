@@ -10,6 +10,7 @@ import Login from './components/Login';
 import PasswordReset from './components/PasswordReset';
 import PasswordConfirm from './components/PasswordConfirm';
 import Dashboard from './components/Dashboard';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -23,7 +24,13 @@ function App() {
                         <Route path="/login" element={<Login />} />
                         <Route path="/password-reset" element={<PasswordReset />} />
                         <Route path="/password-confirm/:username" element={<PasswordConfirm />} />
-                        <Route path="/dashboard" element={<Dashboard />} />
+
+                        <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+                        
                     </Routes>
           <h2>Welcome to the Team Collaboration Tool</h2>
         </main>

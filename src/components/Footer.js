@@ -3,7 +3,10 @@ import React from 'react';
 const Footer = () => {
   return (
     <footer>
-      <p>  Team Collaboration Tool. All rights reserved</p>
+       <h1></h1>
+      <p>All Rights Reserved</p>
+      <h1></h1>
+      
     </footer>
   );
 };
