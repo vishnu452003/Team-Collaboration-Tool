@@ -23,7 +23,7 @@ const PasswordReset = () => {
         console.error(error);
         setSnackbarSeverity('error');
 
-        setMessage('user does not exist. Please try again.');
+        setMessage('User does not exist. Please try again.');
         setSnackbarOpen(true);
         //alert("User does not exist or an error occurred.");
       });
@@ -42,7 +42,7 @@ const PasswordReset = () => {
             name="username" 
             value={username} 
             onChange={(e) => setUsername(e.target.value)} 
-            placeholder="Enter your UserName" 
+            placeholder="Enter Your Username" 
             required 
           />
           <button type="submit">Reset Password</button>
@@ -52,7 +52,7 @@ const PasswordReset = () => {
         open={snackbarOpen}
         autoHideDuration={4000}
         onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
         <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
           {message}

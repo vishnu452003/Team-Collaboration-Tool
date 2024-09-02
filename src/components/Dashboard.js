@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./Dashboard.css"; // Create and style the dashboard with a separate CSS file
+import "./Dashboard.css"; 
 import { FaBars, FaCaretDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom"; 
 
@@ -16,11 +16,11 @@ const Dashboard = () => {
     setIsWorkspaceDropdownOpen(!isWorkspaceDropdownOpen);
   };
   const handleLogout = () => {
-    // Clear tokens or any authentication-related data (e.g., localStorage)
+    
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
 
-    // Redirect to the registration page
+    
     navigate("/");
   };
 

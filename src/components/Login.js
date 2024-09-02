@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Auth.css'; 
+import './Password.css';
 import backgroundImage from './assets/images/auth-background.png'; 
 import { Snackbar, Alert } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';  // Import icons
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -12,10 +13,14 @@ const Login = () => {
     password: ''
   });
   const navigate = useNavigate();  
+  const [showPassword, setShowPassword] = useState(false);  // Add state for showing password
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);  // Toggle password visibility
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -32,15 +37,12 @@ const Login = () => {
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
       setError('');
-      console.log(response.data);
       navigate('/dashboard');
     })
     .catch(error => {
       setMessage('Invalid credentials');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
-      //setError('Login failed: ' + (error.response.data.message || 'Invalid credentials'));
-      console.error(error);
     });
   };
 
@@ -48,12 +50,17 @@ const Login = () => {
     setSnackbarOpen(false);
   };
 
+ 
+
   return (
+    
     <div className="auth-container">
-         <img src={backgroundImage} alt="Auth Background" className="auth-image" />
+         
+      <img src={backgroundImage} alt="Auth Background" className="auth-image" />
       <div className="auth-box">
         <h2>Login</h2>
         <form onSubmit={handleSubmit}>
+        <div className="password-input-container">
           <input 
             type="text" 
             name="username" 
@@ -62,17 +69,23 @@ const Login = () => {
             placeholder="Username" 
             required 
           />
-          <input 
-            type="password" 
-            name="password" 
-            value={formData.password} 
-            onChange={handleChange} 
-            placeholder="Password" 
-            required 
-          />
+          </div>
+          <div className="password-input-container">
+            <input 
+              type={showPassword ? 'text' : 'password'} 
+              name="password" 
+              value={formData.password} 
+              onChange={handleChange} 
+              placeholder="Password" 
+              required 
+            />
+            <span className="password-toggle-icon" onClick={togglePasswordVisibility}>
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
           <button type="submit">Login</button>
         </form>
-        {message && <p>{message}</p>}
+        
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <p>
           <Link to="/password-reset">Forgot your password?</Link>
@@ -83,7 +96,7 @@ const Login = () => {
         open={snackbarOpen}
         autoHideDuration={4000}
         onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
         <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
           {message}
