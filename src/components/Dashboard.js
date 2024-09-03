@@ -8,10 +8,12 @@ const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isWorkspaceDropdownOpen, setIsWorkspaceDropdownOpen] = useState(false);
   const [showWorkspaceForm, setShowWorkspaceForm] = useState(false);
+  const [showAddMemberForm, setShowAddMemberForm] = useState(false);
   const [workspaceName, setWorkspaceName] = useState("");
   const [workspaceDescription, setWorkspaceDescription] = useState(""); // New state for description
   const [workspaces, setWorkspaces] = useState([]);
   const [editWorkspaceId, setEditWorkspaceId] = useState(null);
+  const [newMemberUsernames, setNewMemberUsernames] = useState(""); // New state for new members
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -95,6 +97,21 @@ const Dashboard = () => {
     setEditWorkspaceId(null);
   };
 
+  const handleAddMembers = async (e) => {
+    e.preventDefault();
+    const usernames = newMemberUsernames.split(',').map(username => username.trim());
+    try {
+      await axios.post(`http://localhost:8000/api/workspaces/${editWorkspaceId}/add_member/`, { usernames }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` }
+      });
+      setShowAddMemberForm(false);
+      setNewMemberUsernames(""); // Clear the input field
+      fetchWorkspaces(); // Refresh the list of workspaces
+    } catch (error) {
+      console.error("Error adding members:", error);
+    }
+  };
+
   return (
     <div className="dashboard">
       <header className="dashboard-header">
@@ -144,6 +161,22 @@ const Dashboard = () => {
                 <button type="submit">{editWorkspaceId ? 'Update Workspace' : 'Create Workspace'}</button>
                 <button type="button" onClick={clearForm}>Cancel</button>
               </form>
+              {editWorkspaceId && (
+                <div className="add-member-form">
+                  <h3>Add Members</h3>
+                  <form onSubmit={handleAddMembers}>
+                    <input
+                      type="text"
+                      value={newMemberUsernames}
+                      onChange={(e) => setNewMemberUsernames(e.target.value)}
+                      placeholder="Enter usernames separated by commas"
+                      required
+                    />
+                    <button type="submit">Add Members</button>
+                    <button type="button" onClick={() => setShowAddMemberForm(false)}>Cancel</button>
+                  </form>
+                </div>
+              )}
             </div>
           ) : (
             <section className="overview-section">
