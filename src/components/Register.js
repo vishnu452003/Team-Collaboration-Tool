@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Snackbar, Alert} from '@mui/material';
-import backgroundImage from './assets/images/auth-background.png';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
-
+import { useNavigate } from 'react-router-dom';
 import './Auth.css';
 import './Password.css';
-import { useNavigate } from 'react-router-dom';
-
-
+import FormContainer from './FormContainer';
+import InputField from './InputField';
+import PasswordField from './PasswordField';
+import SubmitButton from './SubmitButton';
+import SnackbarNotification from './SnackbarNotification';
+import FormFooter from './FormFooter';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -17,19 +17,13 @@ const Register = () => {
     confirmPassword: ''
   });
   const [message, setMessage] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   
   const navigate = useNavigate();
 
-  const togglePasswordVisibility = () => setShowPassword(!showPassword);
-  const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-   
   };
 
   const handleSubmit = (e) => {
@@ -47,96 +41,67 @@ const Register = () => {
       confirm_password: formData.confirmPassword
     })
     .then(response => {
+
+        localStorage.setItem('accessToken', response.data.access);
+        localStorage.setItem('refreshToken', response.data.refresh);
       setMessage('Registration successful!');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
 
       setTimeout(() => {
-        navigate('/login');
+        navigate('/dashboard');
       }, 2000);
     })
     .catch(error => {
-      if (error.response && error.response.data.errors) {
-        const errorMessages = Object.entries(error.response.data.errors)
-          .map(([field, fieldErrors]) => fieldErrors.join(' '))
-          .join('. ');
-          
-        setSnackbarSeverity('error');
-        setMessage(errorMessages);
-        setSnackbarOpen(true);
-      } else {
-        setSnackbarSeverity('error');
-        setMessage('An unexpected error occurred.');
-        setSnackbarOpen(true);
-      }
-      console.error(error);
+      const errorMessages = error.response?.data?.errors 
+        ? Object.entries(error.response.data.errors)
+            .map(([field, fieldErrors]) => fieldErrors.join(' '))
+            .join('. ') 
+        : 'An unexpected error occurred.';
+
+      setSnackbarSeverity('error');
+      setMessage(errorMessages);
+      setSnackbarOpen(true);
     });
   };
 
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-  };
+  const handleSnackbarClose = () => setSnackbarOpen(false);
 
   return (
-    <div className="auth-container">
-      
-        <img src={backgroundImage} alt="Auth Background" className="auth-image" />
-       
-      <div className="auth-box">
-        <h2>Create an Account</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="password-input-container">
-            <input 
-              type="text" 
-              name="username" 
-              value={formData.username} 
-              onChange={handleChange} 
-              placeholder="Username" 
-              required 
-            />
-          </div>
-          <div className="password-input-container">
-            <input 
-              type={showPassword ? 'text' : 'password'} 
-              name="password" 
-              value={formData.password} 
-              onChange={handleChange} 
-              placeholder="Password" 
-              required 
-            />
-            <span className="password-toggle-icon" onClick={togglePasswordVisibility}>
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
-           
-          </div>
-          <div className="password-input-container">
-            <input 
-              type={showConfirmPassword ? 'text' : 'password'} 
-              name="confirmPassword" 
-              value={formData.confirmPassword} 
-              onChange={handleChange} 
-              placeholder="Confirm Password" 
-              required 
-            />
-            <span className="password-toggle-icon" onClick={toggleConfirmPasswordVisibility}>
-              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
-          </div>
-          <button type="submit">Sign Up</button>
-        </form>
-        <p>Already have an account? <a href="/login">Login</a></p>
-      </div>
-      <Snackbar
+    <FormContainer 
+      title="Create an Account"
+      footer={<FormFooter text="Already have an account?" linkText="Login" linkUrl="/login" />}
+    >
+      <form onSubmit={handleSubmit}>
+        <InputField 
+          type="text"
+          name="username"
+          value={formData.username}
+          onChange={handleChange}
+          placeholder="Username"
+          required
+        />
+        <PasswordField 
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="Password"
+        />
+        <PasswordField 
+          name="confirmPassword"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+          placeholder="Confirm Password"
+        />
+        <SubmitButton text="Sign Up" />
+      </form>
+      <SnackbarNotification
         open={snackbarOpen}
-        autoHideDuration={5000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
-          {message}
-        </Alert>
-      </Snackbar>
-    </div>
+        handleClose={handleSnackbarClose}
+        severity={snackbarSeverity}
+        message={message}
+      />
+    </FormContainer>
   );
 };
 
