@@ -15,6 +15,7 @@ const Dashboard = () => {
   const [showAddMemberForm, setShowAddMemberForm] = useState(false);
   const [newMemberUsernames, setNewMemberUsernames] = useState("");
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(null);
+  const [selectedWorkspace, setSelectedWorkspace] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -67,6 +68,7 @@ const Dashboard = () => {
       setShowWorkspaceForm(false);
       setWorkspaceName("");
       setWorkspaceDescription("");
+      clearForm(); 
     } catch (error) {
       console.error("Error creating/updating workspace:", error);
     }
@@ -89,6 +91,11 @@ const Dashboard = () => {
     setEditWorkspaceId(workspace.id);
     setSelectedWorkspaceId(workspace.id);
     setShowWorkspaceForm(true);
+  };
+
+  const handleSelectWorkspace = async (workspace) => {
+    setSelectedWorkspaceId(workspace.id);
+    setSelectedWorkspace(workspace); // Set selected workspace details
   };
 
   const clearForm = () => {
@@ -130,7 +137,7 @@ const Dashboard = () => {
               {isWorkspaceDropdownOpen && (
                 <ul className="dropdown-menu">
                   {workspaces.map(workspace => (
-                    <li key={workspace.id} onClick={() => handleEditWorkspace(workspace)}>
+                    <li key={workspace.id} onClick={() =>handleSelectWorkspace(workspace)}>
                       {workspace.name}
                     </li>
                   ))}
@@ -178,7 +185,14 @@ const Dashboard = () => {
                 </div>
               )}
             </div>
-          ) : (
+          ) :selectedWorkspace ? (
+            <section className="workspace-details">
+              <h2>{selectedWorkspace.name}</h2>
+              <p>{selectedWorkspace.description || "No description available."}</p>
+              <button onClick={() => handleEditWorkspace(selectedWorkspace)}>Edit</button>
+              <button onClick={() => handleDeleteWorkspace(selectedWorkspace.id)}>Delete</button>
+            </section>
+          ):(
             <section className="overview-section">
               <h2>Workspaces</h2>
               <button onClick={() => setShowWorkspaceForm(true)} className="create-workspace-button">Create New Workspace</button>
