@@ -8,16 +8,17 @@ const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isWorkspaceDropdownOpen, setIsWorkspaceDropdownOpen] = useState(false);
   const [showWorkspaceForm, setShowWorkspaceForm] = useState(false);
-  const [showAddMemberForm, setShowAddMemberForm] = useState(false);
   const [workspaceName, setWorkspaceName] = useState("");
-  const [workspaceDescription, setWorkspaceDescription] = useState(""); // New state for description
+  const [workspaceDescription, setWorkspaceDescription] = useState("");
   const [workspaces, setWorkspaces] = useState([]);
   const [editWorkspaceId, setEditWorkspaceId] = useState(null);
-  const [newMemberUsernames, setNewMemberUsernames] = useState(""); // New state for new members
+  const [showAddMemberForm, setShowAddMemberForm] = useState(false);
+  const [newMemberUsernames, setNewMemberUsernames] = useState("");
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchWorkspaces(); // Fetch workspaces on component mount
+    fetchWorkspaces();
   }, []);
 
   const toggleSidebar = () => {
@@ -47,27 +48,25 @@ const Dashboard = () => {
 
   const handleCreateOrUpdateWorkspace = async (e) => {
     e.preventDefault();
-    const workspaceData = { 
+    const workspaceData = {
       name: workspaceName,
-      description: workspaceDescription, // Include description
+      description: workspaceDescription,
     };
     try {
       if (editWorkspaceId) {
-        // Update existing workspace
         await axios.put(`http://localhost:8000/api/workspaces/${editWorkspaceId}/`, workspaceData, {
           headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` }
         });
-        setEditWorkspaceId(null); // Reset edit mode
+        setEditWorkspaceId(null);
       } else {
-        // Create new workspace
         await axios.post("http://localhost:8000/api/workspaces/", workspaceData, {
           headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` }
         });
       }
-      fetchWorkspaces(); // Refresh the list of workspaces
+      fetchWorkspaces();
       setShowWorkspaceForm(false);
       setWorkspaceName("");
-      setWorkspaceDescription(""); // Clear description
+      setWorkspaceDescription("");
     } catch (error) {
       console.error("Error creating/updating workspace:", error);
     }
@@ -78,7 +77,7 @@ const Dashboard = () => {
       await axios.delete(`http://localhost:8000/api/workspaces/${workspaceId}/`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` }
       });
-      fetchWorkspaces(); // Refresh the list of workspaces
+      fetchWorkspaces();
     } catch (error) {
       console.error("Error deleting workspace:", error);
     }
@@ -86,14 +85,15 @@ const Dashboard = () => {
 
   const handleEditWorkspace = (workspace) => {
     setWorkspaceName(workspace.name);
-    setWorkspaceDescription(workspace.description); // Set description
+    setWorkspaceDescription(workspace.description);
     setEditWorkspaceId(workspace.id);
+    setSelectedWorkspaceId(workspace.id);
     setShowWorkspaceForm(true);
   };
 
   const clearForm = () => {
     setWorkspaceName("");
-    setWorkspaceDescription(""); // Clear description
+    setWorkspaceDescription("");
     setEditWorkspaceId(null);
   };
 
@@ -101,12 +101,12 @@ const Dashboard = () => {
     e.preventDefault();
     const usernames = newMemberUsernames.split(',').map(username => username.trim());
     try {
-      await axios.post(`http://localhost:8000/api/workspaces/${editWorkspaceId}/add_member/`, { usernames }, {
+      await axios.post(`http://localhost:8000/api/workspaces/${selectedWorkspaceId}/add_member/`, { usernames }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` }
       });
       setShowAddMemberForm(false);
-      setNewMemberUsernames(""); // Clear the input field
-      fetchWorkspaces(); // Refresh the list of workspaces
+      setNewMemberUsernames("");
+      fetchWorkspaces();
     } catch (error) {
       console.error("Error adding members:", error);
     }
@@ -163,7 +163,7 @@ const Dashboard = () => {
               </form>
               {editWorkspaceId && (
                 <div className="add-member-form">
-                  <h3>Add Members</h3>
+                  <h3>Add Members to {workspaceName}</h3>
                   <form onSubmit={handleAddMembers}>
                     <input
                       type="text"
