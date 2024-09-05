@@ -10,6 +10,7 @@ import PasswordConfirm from './components/PasswordConfirm';
 import Dashboard from './components/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 
+
 function App() {
   return (
     <Router>
@@ -22,6 +23,7 @@ function App() {
                         <Route path="/login" element={<Login />} />
                         <Route path="/password-reset" element={<PasswordReset />} />
                         <Route path="/password-confirm/:username" element={<PasswordConfirm />} />
+                        
 
                         <Route path="/dashboard" element={
                 <ProtectedRoute>

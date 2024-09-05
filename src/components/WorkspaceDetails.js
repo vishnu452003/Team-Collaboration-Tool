@@ -3,8 +3,6 @@ import React from "react";
 const WorkspaceDetails = ({
   selectedWorkspace,
   members,
-  handleEditWorkspace,
-  handleDeleteWorkspace,
   setSelectedWorkspace,
 }) => (
   <section className="workspace-details">
@@ -17,10 +15,7 @@ const WorkspaceDetails = ({
     <ul>
       {members.length > 0 ? members.map((member, index) => <li key={index}>{member}</li>) : <li>No members added yet.</li>}
     </ul>
-    <div className="workspace-actions">
-      <button onClick={() => handleEditWorkspace(selectedWorkspace)}>Edit</button>
-      <button onClick={() => handleDeleteWorkspace(selectedWorkspace.id)}>Delete</button>
-    </div>
+    
   </section>
 );
 

@@ -8,6 +8,8 @@ import WorkspaceDetails from "./WorkspaceDetails";
 import AddMemberForm from "./AddMemberForm";
 import Notification from "./Notification";
 import WorkspaceOverview from "./WorkspaceOverview";
+import ProjectList from "./ProjectList";  // Import ProjectList
+import CreateProjectForm from "./CreateProjectForm";  // Import CreateProjectForm
 import "./Dashboard.css";
 
 const Dashboard = () => {
@@ -18,12 +20,13 @@ const Dashboard = () => {
   const [workspaceDescription, setWorkspaceDescription] = useState("");
   const [workspaces, setWorkspaces] = useState([]);
   const [editWorkspaceId, setEditWorkspaceId] = useState(null);
-  const [showAddMemberForm, setShowAddMemberForm] = useState(false);
   const [newMemberUsernames, setNewMemberUsernames] = useState("");
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(null);
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
   const [notificationMessage, setNotificationMessage] = useState("");
   const [members, setMembers] = useState([]);
+  const [showCreateProjectForm, setShowCreateProjectForm] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -120,7 +123,7 @@ const Dashboard = () => {
           headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
         }
       );
-      setShowAddMemberForm(false);
+     
       setNewMemberUsernames("");
       setNotificationMessage(`Members added successfully: ${usernames.join(", ")}`);
       setTimeout(() => setNotificationMessage(""), 3000);
@@ -174,13 +177,31 @@ const Dashboard = () => {
               )}
             </>
           ) : selectedWorkspace ? (
-            <WorkspaceDetails
-              selectedWorkspace={selectedWorkspace}
-              members={members}
-              handleEditWorkspace={handleEditWorkspace}
-              handleDeleteWorkspace={handleDeleteWorkspace}
-              setSelectedWorkspace={setSelectedWorkspace}
-            />
+            <>
+              <WorkspaceDetails
+                selectedWorkspace={selectedWorkspace}
+                members={members}
+                handleEditWorkspace={handleEditWorkspace}
+                handleDeleteWorkspace={handleDeleteWorkspace}
+                setSelectedWorkspace={setSelectedWorkspace}
+              />
+               <button 
+                className="create-project-button" 
+                onClick={() => setShowCreateProjectForm(!showCreateProjectForm)}
+              >
+                {showCreateProjectForm ? "Cancel" : "Create Project in this Workspace"}
+              </button>
+
+              {showCreateProjectForm && (
+                <CreateProjectForm
+                  workspaceId={selectedWorkspace.id}
+                  fetchProjects={fetchWorkspaces} 
+                />
+              )}
+
+              <ProjectList workspaceId={selectedWorkspace.id} />
+             
+            </>
           ) : (
             <WorkspaceOverview
               workspaces={workspaces}
