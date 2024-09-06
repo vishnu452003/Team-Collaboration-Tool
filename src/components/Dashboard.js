@@ -11,6 +11,8 @@ import WorkspaceOverview from "./WorkspaceOverview";
 import ProjectList from "./ProjectList";  // Import ProjectList
 import CreateProjectForm from "./CreateProjectForm";  // Import CreateProjectForm
 import "./Dashboard.css";
+import ProjectDetails from "./ProjectDetails";
+
 
 const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -26,6 +28,8 @@ const Dashboard = () => {
   const [notificationMessage, setNotificationMessage] = useState("");
   const [members, setMembers] = useState([]);
   const [showCreateProjectForm, setShowCreateProjectForm] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
+  
 
   const navigate = useNavigate();
 
@@ -103,6 +107,8 @@ const Dashboard = () => {
     setSelectedWorkspaceId(workspace.id);
     setSelectedWorkspace(workspace);
     setMembers(workspace.members);
+    setSelectedProject(null);//change
+    
   };
 
   const resetWorkspaceForm = () => {
@@ -135,6 +141,20 @@ const Dashboard = () => {
     }
   };
 
+  const handleSelectProject = async (project) => {
+    try {
+      const response = await axios.get(`http://localhost:8000/api/projects/${project.id}/`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+      });
+      setSelectedProject(response.data);  // Update the selected project state
+    } catch (error) {
+      console.error("Error fetching project details:", error);
+    }
+  };
+  
+
+  
+
   return (
     <div className="dashboard">
       <header className="dashboard-header">
@@ -152,6 +172,8 @@ const Dashboard = () => {
           toggleWorkspaceDropdown={toggleWorkspaceDropdown}
           isWorkspaceDropdownOpen={isWorkspaceDropdownOpen}
           handleSelectWorkspace={handleSelectWorkspace}
+          handleSelectProject={handleSelectProject} // Pass 
+          
         />
 
         <main className="dashboard-main">
@@ -176,7 +198,11 @@ const Dashboard = () => {
                 />
               )}
             </>
-          ) : selectedWorkspace ? (
+          ) :
+           selectedProject ? (
+            <ProjectDetails project={selectedProject} /> // Show project details when selected
+          ):
+          selectedWorkspace ? (
             <>
               <WorkspaceDetails
                 selectedWorkspace={selectedWorkspace}
